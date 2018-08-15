@@ -28,8 +28,9 @@ def relu_forward(Z):
 
 def linear_backward(dZ, cache):
     A_pre, W, b = cache
-    dW = dZ.dot(A_pre.T)
-    db = dZ.sum(axis=1, keepdims=True)
+    m = W.shape[1]
+    dW = dZ.dot(A_pre.T) / m
+    db = dZ.sum(axis=1, keepdims=True) / m
     dA_pre = W.T.dot(dZ)
     return dA_pre, dW, db
 
@@ -110,7 +111,7 @@ def update_parameters(parameters, grads, learning_rate):
         parameters["b"+str(l)] -= grads["db"+str(l)] * learning_rate
     return parameters
 ########################################################
-def DNN_model(X, Y, layer_dims, learning_rate=0.075, num_iter=1000, random_state=0, print_cost=True):
+def DNN_model(X, Y, layer_dims, learning_rate=0.075, num_iter=2500, random_state=0, print_cost=True):
     parameters = parameters_init(layer_dims, random_state)
     costs = []
     for i in range(num_iter):
@@ -139,7 +140,19 @@ parameters  = DNN_model(train_set_x, train_set_y, layer_dims)
 
 
 
+## START CODE HERE ##
+my_image = "cat.jpg" # change this to the name of your image file 
+my_label_y = [1] # the true class of your image (1 -> cat, 0 -> non-cat)
+## END CODE HERE ##
+
+fname = "images/" + my_image
+image = np.array(ndimage.imread(fname, flatten=False))
+my_image = scipy.misc.imresize(image, size=(num_px,num_px)).reshape((num_px*num_px*3,1))
+my_predicted_image = predict(my_image, my_label_y, parameters)
+
+plt.imshow(image)
+print ("y = " + str(np.squeeze(my_predicted_image)) + ", your L-layer model predicts a \"" + classes[int(np.squeeze(my_predicted_image)),].decode("utf-8") +  "\" picture.")
 
 
 
-
+##############################################################
